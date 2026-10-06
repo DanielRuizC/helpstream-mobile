@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:layout_marginBottom="48dp"
-            android:text="EMPRESA S.A."
+            android:text="HelpStream"
             android:textColor="#003366"
             android:textSize="28sp"
             android:textStyle="bold" />

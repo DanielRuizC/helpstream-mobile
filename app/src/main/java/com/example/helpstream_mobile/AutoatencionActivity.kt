@@ -29,7 +29,7 @@ class AutoatencionActivity : AppCompatActivity() {
         val ticketId = intent.getIntExtra("TICKET_ID", -1)
 
         // Inicializar el adaptador con ticketId y lifecycleScope
-        adapter = VideoTutorialAdapter(this, emptyList(), "10.0.2.2:8000", ticketId, lifecycleScope)
+        adapter = VideoTutorialAdapter(this, emptyList(), "helpstream-api.onrender.com", ticketId, lifecycleScope)
         viewPager.adapter = adapter
 
         setupSearch()
@@ -42,7 +42,7 @@ class AutoatencionActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val response = withContext(Dispatchers.IO) {
-                    RetrofitClient.instance.obtenerVideosTutoriales(tags)
+                    RetrofitClient.getInstance(this@AutoatencionActivity).obtenerVideosTutoriales(tags)
                 }
 
                 if (response.isSuccessful) {

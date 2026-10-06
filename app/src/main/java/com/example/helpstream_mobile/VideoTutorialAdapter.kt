@@ -59,7 +59,7 @@ class VideoTutorialAdapter(
         val fullUrl = if (video.url_video.startsWith("http")) {
             video.url_video
         } else {
-            "http://$backendIp/$cleanUrl"
+            "https://$backendIp/$cleanUrl"
         }
 
         val mediaItem = MediaItem.fromUri(fullUrl)
@@ -82,7 +82,7 @@ class VideoTutorialAdapter(
         coroutineScope.launch {
             try {
                 val response = withContext(Dispatchers.IO) {
-                    RetrofitClient.instance.resolverTicketAutoatencion(ticketId)
+                    RetrofitClient.getInstance(context).resolverTicketAutoatencion(ticketId)
                 }
 
                 if (response.isSuccessful) {

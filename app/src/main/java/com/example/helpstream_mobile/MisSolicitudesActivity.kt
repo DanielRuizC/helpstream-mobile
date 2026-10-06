@@ -41,7 +41,7 @@ class MisSolicitudesActivity : AppCompatActivity() {
     private fun cargarSolicitudes(userId: Int) {
         lifecycleScope.launch {
             try {
-                val response = RetrofitClient.instance.obtenerMisSolicitudes(userId)
+                val response = RetrofitClient.getInstance(this@MisSolicitudesActivity).obtenerMisSolicitudes(userId)
                 if (response.isSuccessful) {
                     val listado = response.body() ?: emptyList()
                     adapter = MisSolicitudesAdapter(listado)

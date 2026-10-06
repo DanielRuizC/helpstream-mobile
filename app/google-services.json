@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "449092357765",
+    "project_id": "helpstream-3debc",
+    "storage_bucket": "helpstream-3debc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:449092357765:android:cc7ccd868741f497a623ec",
+        "android_client_info": {
+          "package_name": "com.example.helpstream_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApviCKGnXGtY6s41nF6r7rrbumBL60Jrg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
