@@ -37,25 +37,17 @@
                 android:textSize="28sp"
                 android:textStyle="bold" />
 
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+            <ImageButton
+                android:id="@+id/btnNotifications"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                app:cardBackgroundColor="#FFFFFF"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="2dp">
-
-                <ImageButton
-                    android:id="@+id/btnNotifications"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@android:drawable/ic_popup_reminder"
-                    android:padding="8dp"
-                    android:scaleType="centerInside"
-                    app:tint="#0D244D" />
-            </com.google.android.material.card.MaterialCardView>
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_popup_reminder"
+                android:padding="8dp"
+                android:scaleType="centerInside"
+                app:tint="#0D244D" />
         </RelativeLayout>
 
         <!-- Tarjeta 1: Registrar Incidente -->

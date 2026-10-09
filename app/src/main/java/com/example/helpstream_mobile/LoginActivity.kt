@@ -79,23 +79,30 @@ class LoginActivity : AppCompatActivity() {
                         btnLogin.isEnabled = true
 
                         if (responseUsuario.isSuccessful && responseUsuario.body() != null) {
-                            val usuario = responseUsuario.body()!!
+                            try {
+                                val usuario = responseUsuario.body()!!
 
-                            val nombreLimpio = usuario.nombre.ifEmpty { "Usuario" }
-                            val apellidosLimpio = usuario.apellidos.ifEmpty { "" }
-                            
-                            // Guardamos los datos del usuario en SharedPreferences garantizando no guardar strings "null"
-                            with(sharedPref.edit()) {
-                                putInt("USER_ID", usuario.id)
-                                putString("USER_NAME", "$nombreLimpio $apellidosLimpio".trim())
-                                putString("USER_EMAIL", usuario.correo)
-                                putInt("USER_ROLE", usuario.rol_id)
-                                apply()
+                                val nombreLimpio = usuario.nombre ?: usuario.nombre_usuario ?: "Usuario"
+                                val apellidosLimpio = usuario.apellidos ?: ""
+                                val correoLimpio = usuario.correo ?: ""
+                                val rolLimpio = usuario.rol_id ?: 0
+                                
+                                // Guardamos los datos del usuario en SharedPreferences garantizando no guardar strings "null"
+                                with(sharedPref.edit()) {
+                                    putInt("USER_ID", usuario.id)
+                                    putString("USER_NAME", "$nombreLimpio $apellidosLimpio".trim())
+                                    putString("USER_EMAIL", correoLimpio)
+                                    putInt("USER_ROLE", rolLimpio)
+                                    apply()
+                                }
+
+                                Toast.makeText(this@LoginActivity, "¡Bienvenido $nombreLimpio!", Toast.LENGTH_SHORT).show()
+                                obtenerFCMToken()
+                                irAPantallaPrincipal()
+                            } catch (e: Exception) {
+                                android.util.Log.e("LoginActivity", "Error procesando el inicio de sesión", e)
+                                Toast.makeText(this@LoginActivity, "Error procesando el inicio de sesión", Toast.LENGTH_SHORT).show()
                             }
-
-                            Toast.makeText(this@LoginActivity, "¡Bienvenido $nombreLimpio!", Toast.LENGTH_SHORT).show()
-                            obtenerFCMToken()
-                            irAPantallaPrincipal()
                         } else {
                             val errorBody = responseUsuario.errorBody()?.string() ?: "Sin detalles al buscar usuario"
                             Toast.makeText(this@LoginActivity, "Error obteniendo datos: $errorBody", Toast.LENGTH_LONG).show()

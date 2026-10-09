@@ -61,15 +61,20 @@ data class TicketRespuesta(
 
 data class UsuarioLogin(
     val id: Int,
-    val nombre: String,
-    val apellidos: String,
-    val correo: String,
-    val rol_id: Int
+    val nombre: String? = null,
+    val apellidos: String? = null,
+    val correo: String? = null,
+    val rol_id: Int? = null,
+    val nombre_usuario: String? = null
 )
 
 data class LoginResponse(
     val access_token: String,
-    val token_type: String
+    val token_type: String,
+    val id: Int? = null,
+    val nombre: String? = null,
+    val nombre_usuario: String? = null,
+    val correo: String? = null
 )
 
 // 2. La interfaz de Retrofit que define el endpoint
