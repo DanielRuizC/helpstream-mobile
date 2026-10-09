@@ -1,14 +1,18 @@
 package com.example.helpstream_mobile
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.launch
 
 class NotificationsActivity : AppCompatActivity() {
 
@@ -25,13 +29,49 @@ class NotificationsActivity : AppCompatActivity() {
         val rvNotifications = findViewById<RecyclerView>(R.id.rvNotifications)
         rvNotifications.layoutManager = LinearLayoutManager(this)
 
-        // Mock list of notifications
-        val mockNotifications = listOf(
-            NotificationItem("Ticket #70 actualizado", "El estado de tu ticket ha cambiado a EN PROCESO"),
-            NotificationItem("Ticket #71 actualizado", "El estado de tu ticket ha cambiado a RESUELTO")
-        )
+        val sharedPref = getSharedPreferences("HelpStreamSession", Context.MODE_PRIVATE)
+        val userId = sharedPref.getInt("USER_ID", -1)
 
-        rvNotifications.adapter = NotificationsAdapter(mockNotifications)
+        if (userId != -1) {
+            cargarNotificacionesReales(userId, rvNotifications)
+        } else {
+            Toast.makeText(this, "Error: Sesión no encontrada", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun cargarNotificacionesReales(userId: Int, recyclerView: RecyclerView) {
+        lifecycleScope.launch {
+            try {
+                // Usamos el endpoint existente de obtener mis solicitudes para ver los últimos estados
+                val response = RetrofitClient.getInstance(this@NotificationsActivity).obtenerMisSolicitudes(userId)
+                
+                if (response.isSuccessful) {
+                    val tickets = response.body() ?: emptyList()
+                    
+                    if (tickets.isEmpty()) {
+                        // En caso de que la respuesta sea 0 elementos, lo manejamos mostrando un texto vacío
+                        // Aquí podríamos ocultar el RecyclerView y mostrar un TextView, pero para simplicidad 
+                        // enviaremos un item especial informativo al Adapter.
+                        recyclerView.adapter = NotificationsAdapter(listOf(
+                            NotificationItem("No hay notificaciones nuevas", "Cuando actualicen tus tickets, aparecerán aquí.")
+                        ))
+                    } else {
+                        // Mapeamos los tickets reales a elementos de notificación visual
+                        val notificacionesReales = tickets.map { ticket ->
+                            NotificationItem(
+                                "Ticket #${ticket.id} actualizado",
+                                "El estado de tu ticket ha cambiado a ${ticket.estado.uppercase()}"
+                            )
+                        }
+                        recyclerView.adapter = NotificationsAdapter(notificacionesReales)
+                    }
+                } else {
+                    Toast.makeText(this@NotificationsActivity, "Error al cargar el historial", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this@NotificationsActivity, "Error de conexión: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     class NotificationsAdapter(private val notifications: List<NotificationItem>) :

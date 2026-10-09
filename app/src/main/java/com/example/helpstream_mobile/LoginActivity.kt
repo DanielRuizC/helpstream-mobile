@@ -81,16 +81,19 @@ class LoginActivity : AppCompatActivity() {
                         if (responseUsuario.isSuccessful && responseUsuario.body() != null) {
                             val usuario = responseUsuario.body()!!
 
-                            // Guardamos los datos del usuario en SharedPreferences
+                            val nombreLimpio = usuario.nombre.ifEmpty { "Usuario" }
+                            val apellidosLimpio = usuario.apellidos.ifEmpty { "" }
+                            
+                            // Guardamos los datos del usuario en SharedPreferences garantizando no guardar strings "null"
                             with(sharedPref.edit()) {
                                 putInt("USER_ID", usuario.id)
-                                putString("USER_NAME", "${usuario.nombre} ${usuario.apellidos}")
+                                putString("USER_NAME", "$nombreLimpio $apellidosLimpio".trim())
                                 putString("USER_EMAIL", usuario.correo)
                                 putInt("USER_ROLE", usuario.rol_id)
                                 apply()
                             }
 
-                            Toast.makeText(this@LoginActivity, "¡Bienvenido ${usuario.nombre}!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@LoginActivity, "¡Bienvenido $nombreLimpio!", Toast.LENGTH_SHORT).show()
                             obtenerFCMToken()
                             irAPantallaPrincipal()
                         } else {

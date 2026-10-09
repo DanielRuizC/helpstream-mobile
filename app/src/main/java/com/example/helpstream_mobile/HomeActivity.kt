@@ -47,7 +47,10 @@ class HomeActivity : AppCompatActivity() {
             return
         }
         
-        findViewById<android.widget.TextView>(R.id.tvWelcomeName).text = "Hola, $userNameRaw"
+        val tvWelcome = findViewById<android.widget.TextView>(R.id.tvWelcomeName)
+        val spanString = android.text.SpannableString("Hola, $userNameRaw")
+        spanString.setSpan(android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 6, spanString.length, android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        tvWelcome.text = spanString
         
         val initials = userNameRaw.split(" ").mapNotNull { it.firstOrNull()?.uppercase() }.take(2).joinToString("")
         findViewById<android.widget.TextView>(R.id.tvInitials).text = if (initials.isNotEmpty()) initials else "U"
