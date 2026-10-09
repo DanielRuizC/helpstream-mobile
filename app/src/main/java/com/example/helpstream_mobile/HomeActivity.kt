@@ -1,6 +1,7 @@
 package com.example.helpstream_mobile
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -34,12 +35,21 @@ class HomeActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        val sharedPref = getSharedPreferences("HelpStreamSession", android.content.Context.MODE_PRIVATE)
-        val userName = sharedPref.getString("USER_NAME", "Usuario") ?: "Usuario"
+        val sharedPref = getSharedPreferences("HelpStreamSession", Context.MODE_PRIVATE)
+        val userNameRaw = sharedPref.getString("USER_NAME", "")
         
-        findViewById<android.widget.TextView>(R.id.tvWelcomeName).text = "Hola, $userName"
+        if (userNameRaw.isNullOrEmpty() || userNameRaw == "null" || userNameRaw == "null null") {
+            sharedPref.edit().clear().apply()
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+            return
+        }
         
-        val initials = userName.split(" ").mapNotNull { it.firstOrNull()?.uppercase() }.take(2).joinToString("")
+        findViewById<android.widget.TextView>(R.id.tvWelcomeName).text = "Hola, $userNameRaw"
+        
+        val initials = userNameRaw.split(" ").mapNotNull { it.firstOrNull()?.uppercase() }.take(2).joinToString("")
         findViewById<android.widget.TextView>(R.id.tvInitials).text = if (initials.isNotEmpty()) initials else "U"
 
         findViewById<android.widget.ImageButton>(R.id.btnNotifications).setOnClickListener {
