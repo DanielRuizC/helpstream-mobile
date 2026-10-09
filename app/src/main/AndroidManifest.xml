@@ -43,6 +43,10 @@
             android:name=".TicketConfirmacionActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".NotificationsActivity"
+            android:exported="false" />
+
         <service
             android:name=".MyFirebaseMessagingService"
             android:exported="false">

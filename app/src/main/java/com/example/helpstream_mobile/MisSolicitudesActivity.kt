@@ -31,6 +31,17 @@ class MisSolicitudesActivity : AppCompatActivity() {
         val sharedPref = getSharedPreferences("HelpStreamSession", Context.MODE_PRIVATE)
         val userId = sharedPref.getInt("USER_ID", -1)
 
+        val etSearch = findViewById<android.widget.EditText>(R.id.etSearch)
+        etSearch.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (::adapter.isInitialized) {
+                    adapter.filter(s.toString())
+                }
+            }
+            override fun afterTextChanged(s: android.text.Editable?) {}
+        })
+
         if (userId != -1) {
             cargarSolicitudes(userId)
         } else {

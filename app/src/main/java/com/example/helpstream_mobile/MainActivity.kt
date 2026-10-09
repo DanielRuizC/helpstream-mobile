@@ -74,6 +74,14 @@ class MainActivity : AppCompatActivity() {
         spinnerPiso.adapter = pisoAdapter
         spinnerPiso.isEnabled = false
 
+        val hideKeyboardListener = View.OnTouchListener { v, _ ->
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+            imm.hideSoftInputFromWindow(v.windowToken, 0)
+            false
+        }
+        spinnerSede.setOnTouchListener(hideKeyboardListener)
+        spinnerPiso.setOnTouchListener(hideKeyboardListener)
+
         spinnerSede.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: android.widget.AdapterView<*>, view: View?, position: Int, id: Long) {
                 val sedeSeleccionada = sedes[position]

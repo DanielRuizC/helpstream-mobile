@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 class MisSolicitudesAdapter(private val solicitudes: List<TicketRespuesta>) :
     RecyclerView.Adapter<MisSolicitudesAdapter.SolicitudViewHolder>() {
 
+    private var solicitudesFiltradas: List<TicketRespuesta> = solicitudes
+
     class SolicitudViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvTicketId: TextView = view.findViewById(R.id.tvTicketId)
         val tvFecha: TextView = view.findViewById(R.id.tvFecha)
@@ -28,7 +30,7 @@ class MisSolicitudesAdapter(private val solicitudes: List<TicketRespuesta>) :
     }
 
     override fun onBindViewHolder(holder: SolicitudViewHolder, position: Int) {
-        val ticket = solicitudes[position]
+        val ticket = solicitudesFiltradas[position]
         holder.tvTicketId.text = "Ticket #${ticket.id}"
         holder.tvFecha.text = ticket.fecha_creacion
         holder.tvDescripcion.text = ticket.descripcion
@@ -62,5 +64,17 @@ class MisSolicitudesAdapter(private val solicitudes: List<TicketRespuesta>) :
         }
     }
 
-    override fun getItemCount() = solicitudes.size
+    override fun getItemCount() = solicitudesFiltradas.size
+
+    fun filter(query: String) {
+        solicitudesFiltradas = if (query.isEmpty()) {
+            solicitudes
+        } else {
+            solicitudes.filter {
+                it.id.toString().contains(query, ignoreCase = true) ||
+                it.descripcion.contains(query, ignoreCase = true)
+            }
+        }
+        notifyDataSetChanged()
+    }
 }

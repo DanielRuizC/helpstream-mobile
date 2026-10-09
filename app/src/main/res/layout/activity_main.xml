@@ -52,6 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="Describe tu problema"
+                app:placeholderText="ej. la impresora de almacén no enciende..."
                 app:hintEnabled="true"
                 app:expandedHintEnabled="true"
                 app:boxStrokeColor="#003366"
@@ -69,8 +70,7 @@
                     android:inputType="textMultiLine|textCapSentences"
                     android:scrollbars="vertical"
                     android:textColor="#000000"
-                    android:textColorHint="#757575"
-                    android:hint="Describe tu problema detalladamente&#10;(ej. la impresora de almacén no enciende o hay caída de red)" />
+                    android:textColorHint="#757575" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
