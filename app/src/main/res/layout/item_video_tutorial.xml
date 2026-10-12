@@ -4,81 +4,192 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black">
+    android:background="@android:color/black"
+    android:fitsSystemWindows="false">
 
+    <!-- ExoPlayer en el fondo ocupando todo -->
     <androidx.media3.ui.PlayerView
         android:id="@+id/player_view"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         app:use_controller="true"
+        app:controller_layout_id="@layout/custom_player_control_view"
         app:show_timeout="3000"
-        app:resize_mode="fit"
+        app:resize_mode="zoom"
+        android:fitsSystemWindows="false"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/info_container" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/info_container"
+    <!-- Degradado Inferior (Legibilidad) -->
+    <View
         android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:background="@drawable/bottom_gradient"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <!-- Botones de Reacción (Lado Derecho) -->
+    <LinearLayout
+        android:id="@+id/reaction_buttons"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#80000000"
         android:orientation="vertical"
-        android:padding="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/action_buttons_container">
+        android:gravity="center_horizontal"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Solucioné mi problema -->
+        <LinearLayout
+            android:id="@+id/btnSolucioneProblema"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginBottom="24dp">
+            <FrameLayout
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/circle_bg_translucent">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    app:tint="#4CAF50"
+                    android:src="@android:drawable/checkbox_on_background" />
+            </FrameLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="SOLUCIONÉ\nMI PROBLEMA"
+                android:textColor="@android:color/white"
+                android:textSize="10sp"
+                android:textAlignment="center" />
+        </LinearLayout>
+
+        <!-- No funcionó -->
+        <LinearLayout
+            android:id="@+id/btnNoFunciono"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginBottom="24dp">
+            <FrameLayout
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/circle_bg_translucent">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    app:tint="#F44336"
+                    android:src="@android:drawable/ic_dialog_alert" />
+            </FrameLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="NO FUNCIONÓ,\nESPERAR AL\nTÉCNICO"
+                android:textColor="@android:color/white"
+                android:textSize="10sp"
+                android:textAlignment="center" />
+        </LinearLayout>
+
+        <!-- Compartir -->
+        <LinearLayout
+            android:id="@+id/btnCompartir"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
+            <FrameLayout
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/circle_bg_translucent">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    app:tint="@android:color/white"
+                    android:src="@android:drawable/ic_menu_share" />
+            </FrameLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Compartir"
+                android:textColor="@android:color/white"
+                android:textSize="10sp"
+                android:textAlignment="center" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Información del Video (Lado Izquierdo) -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/info_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/reaction_buttons"
+        app:layout_constraintStart_toStartOf="parent">
 
         <TextView
             android:id="@+id/text_video_titulo"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
             android:textSize="18sp"
             android:textStyle="bold"
+            android:shadowColor="#80000000"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             tools:text="Título del Video" />
 
         <TextView
             android:id="@+id/text_video_descripcion"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="8dp"
             android:textColor="@android:color/white"
             android:textSize="14sp"
+            android:maxLines="3"
+            android:ellipsize="end"
+            android:shadowColor="#80000000"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            app:layout_constraintTop_toBottomOf="@+id/text_video_titulo"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             tools:text="Descripción detallada del tutorial para operarios." />
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/action_buttons_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="8dp"
-        android:weightSum="2"
-        android:background="@android:color/black"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSolucioneProblema"
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chip_group_tags"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:layout_weight="1"
-            android:backgroundTint="#2E7D32"
-            android:text="SOLUCIONÉ\nMI PROBLEMA"
-            android:textColor="@android:color/white"
-            android:textSize="12sp"
-            app:cornerRadius="8dp" />
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/text_video_descripcion"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnNoFunciono"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:layout_weight="1"
-            android:backgroundTint="#C62828"
-            android:text="NO FUNCIONÓ,\nESPERAR AL TÉCNICO"
-            android:textColor="@android:color/white"
-            android:textSize="12sp"
-            app:cornerRadius="8dp" />
-
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

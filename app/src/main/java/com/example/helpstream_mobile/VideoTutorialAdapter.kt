@@ -2,9 +2,11 @@ package com.example.helpstream_mobile
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.media3.common.MediaItem
@@ -12,7 +14,8 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.button.MaterialButton
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,8 +35,10 @@ class VideoTutorialAdapter(
         val playerView: PlayerView = view.findViewById(R.id.player_view)
         val textTitulo: TextView = view.findViewById(R.id.text_video_titulo)
         val textDescripcion: TextView = view.findViewById(R.id.text_video_descripcion)
-        val btnSolucione: MaterialButton = view.findViewById(R.id.btnSolucioneProblema)
-        val btnNoFunciono: MaterialButton = view.findViewById(R.id.btnNoFunciono)
+        val btnSolucione: LinearLayout = view.findViewById(R.id.btnSolucioneProblema)
+        val btnNoFunciono: LinearLayout = view.findViewById(R.id.btnNoFunciono)
+        val btnCompartir: LinearLayout = view.findViewById(R.id.btnCompartir)
+        val chipGroupTags: ChipGroup = view.findViewById(R.id.chip_group_tags)
         var player: ExoPlayer? = null
     }
 
@@ -47,6 +52,21 @@ class VideoTutorialAdapter(
         val video = videoList[position]
         holder.textTitulo.text = video.titulo
         holder.textDescripcion.text = video.descripcion
+
+        // Setup Chips
+        holder.chipGroupTags.removeAllViews()
+        val tagsArray = video.tags.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+        for (tag in tagsArray) {
+            val chip = Chip(context).apply {
+                text = if (tag.startsWith("#")) tag else "#$tag"
+                setChipBackgroundColorResource(android.R.color.transparent)
+                chipStrokeWidth = 1f
+                setChipStrokeColorResource(android.R.color.white)
+                setTextColor(context.getColor(android.R.color.white))
+                isCheckable = false
+            }
+            holder.chipGroupTags.addView(chip)
+        }
 
         // Inicializar ExoPlayer y registrarlo
         val player = ExoPlayer.Builder(context).build()
@@ -75,6 +95,15 @@ class VideoTutorialAdapter(
 
         holder.btnNoFunciono.setOnClickListener {
             (context as? Activity)?.finish()
+        }
+
+        holder.btnCompartir.setOnClickListener {
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_SUBJECT, "Tutorial: ${video.titulo}")
+                putExtra(Intent.EXTRA_TEXT, "Mira este tutorial: ${video.titulo}\n$fullUrl")
+            }
+            context.startActivity(Intent.createChooser(shareIntent, "Compartir tutorial"))
         }
     }
 
