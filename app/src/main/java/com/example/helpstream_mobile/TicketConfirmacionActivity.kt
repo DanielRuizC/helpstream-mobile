@@ -2,11 +2,16 @@ package com.example.helpstream_mobile
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class TicketConfirmacionActivity : AppCompatActivity() {
 
@@ -33,12 +38,41 @@ class TicketConfirmacionActivity : AppCompatActivity() {
             chipGroup.addView(chip)
         }
 
-        findViewById<MaterialButton>(R.id.btnVideosSugeridos).setOnClickListener {
+        val btnVideosSugeridos = findViewById<MaterialButton>(R.id.btnVideosSugeridos)
+        val tvBtnSubtitle = findViewById<TextView>(R.id.tvBtnSubtitle)
+
+        // Por defecto, ocultamos el botón de videos sugeridos y su subtítulo
+        btnVideosSugeridos.visibility = View.GONE
+        tvBtnSubtitle.visibility = View.GONE
+
+        btnVideosSugeridos.setOnClickListener {
             val intent = Intent(this, AutoatencionActivity::class.java)
             intent.putExtra("TICKET_ID", ticketId)
             intent.putExtra("FILTER_TAGS", tags.joinToString(","))
             intent.putExtra("from_ticket", true)
             startActivity(intent)
+        }
+
+        // Validación de resultados antes de mostrar el botón
+        if (tags.isNotEmpty()) {
+            lifecycleScope.launch(Dispatchers.IO) {
+                try {
+                    val api = RetrofitClient.getInstance(this@TicketConfirmacionActivity)
+                    val response = api.obtenerVideosTutoriales(tags.joinToString(","))
+                    
+                    if (response.isSuccessful) {
+                        val videos = response.body()
+                        if (!videos.isNullOrEmpty()) {
+                            withContext(Dispatchers.Main) {
+                                btnVideosSugeridos.visibility = View.VISIBLE
+                                tvBtnSubtitle.visibility = View.VISIBLE
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
         }
 
         findViewById<MaterialButton>(R.id.btnVolverInicio).setOnClickListener {
