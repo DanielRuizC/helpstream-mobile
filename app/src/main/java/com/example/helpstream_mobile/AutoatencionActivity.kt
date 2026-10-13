@@ -40,9 +40,17 @@ class AutoatencionActivity : AppCompatActivity() {
         btnSearch = findViewById(R.id.btn_search)
 
         val ticketId = intent.getIntExtra("TICKET_ID", -1)
+        val fromTicket = intent.getBooleanExtra("from_ticket", false)
 
-        adapter = VideoTutorialAdapter(this, emptyList(), "helpstream-api.onrender.com", ticketId, lifecycleScope)
+        adapter = VideoTutorialAdapter(this, emptyList(), "helpstream-api.onrender.com", ticketId, fromTicket, lifecycleScope)
         viewPager.adapter = adapter
+
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                adapter?.onPageSelected(position)
+            }
+        })
 
         setupSearch()
         setupTopBar()

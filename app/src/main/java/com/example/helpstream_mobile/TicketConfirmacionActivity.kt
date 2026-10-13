@@ -37,6 +37,7 @@ class TicketConfirmacionActivity : AppCompatActivity() {
             val intent = Intent(this, AutoatencionActivity::class.java)
             intent.putExtra("TICKET_ID", ticketId)
             intent.putExtra("FILTER_TAGS", tags.joinToString(","))
+            intent.putExtra("from_ticket", true)
             startActivity(intent)
         }
 

@@ -32,6 +32,7 @@ class HomeActivity : AppCompatActivity() {
         findViewById<MaterialCardView>(R.id.cardVerVideos).setOnClickListener {
             val intent = Intent(this, AutoatencionActivity::class.java)
             intent.putExtra("FILTER_TAGS", "")
+            intent.putExtra("from_ticket", false)
             startActivity(intent)
         }
 

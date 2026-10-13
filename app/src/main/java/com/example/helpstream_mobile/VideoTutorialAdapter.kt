@@ -3,6 +3,9 @@ package com.example.helpstream_mobile
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,15 +29,17 @@ class VideoTutorialAdapter(
     private var videoList: List<VideoTutorial>,
     private val backendIp: String,
     private val ticketId: Int,
+    private val fromTicket: Boolean,
     private val coroutineScope: CoroutineScope
 ) : RecyclerView.Adapter<VideoTutorialAdapter.VideoViewHolder>() {
 
-    private val activePlayers = mutableListOf<ExoPlayer>()
+    private val players = mutableMapOf<Int, ExoPlayer>()
 
     class VideoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val playerView: PlayerView = view.findViewById(R.id.player_view)
         val textTitulo: TextView = view.findViewById(R.id.text_video_titulo)
         val textDescripcion: TextView = view.findViewById(R.id.text_video_descripcion)
+        val textVerMas: TextView = view.findViewById(R.id.text_ver_mas)
         val btnSolucione: LinearLayout = view.findViewById(R.id.btnSolucioneProblema)
         val btnNoFunciono: LinearLayout = view.findViewById(R.id.btnNoFunciono)
         val btnCompartir: LinearLayout = view.findViewById(R.id.btnCompartir)
@@ -53,16 +58,36 @@ class VideoTutorialAdapter(
         holder.textTitulo.text = video.titulo
         holder.textDescripcion.text = video.descripcion
 
+        // Lógica "Ver más"
+        var isExpanded = false
+        holder.textVerMas.setOnClickListener {
+            if (isExpanded) {
+                holder.textDescripcion.maxLines = 3
+                holder.textVerMas.text = "Ver más"
+            } else {
+                holder.textDescripcion.maxLines = Int.MAX_VALUE
+                holder.textVerMas.text = "Ver menos"
+            }
+            isExpanded = !isExpanded
+        }
+
         // Setup Chips
         holder.chipGroupTags.removeAllViews()
         val tagsArray = video.tags.split(",").map { it.trim() }.filter { it.isNotEmpty() }
         for (tag in tagsArray) {
             val chip = Chip(context).apply {
                 text = if (tag.startsWith("#")) tag else "#$tag"
-                setChipBackgroundColorResource(android.R.color.transparent)
-                chipStrokeWidth = 1f
-                setChipStrokeColorResource(android.R.color.white)
-                setTextColor(context.getColor(android.R.color.white))
+                
+                // Configurar altura mínima reducida y tamaño de letra
+                chipMinHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24f, context.resources.displayMetrics)
+                textSize = 11f
+                
+                // Fondo oscuro semitransparente sin bordes gruesos
+                chipBackgroundColor = ColorStateList.valueOf(Color.parseColor("#99000000"))
+                chipStrokeWidth = 0f
+                
+                // Texto en blanco puro
+                setTextColor(Color.WHITE)
                 isCheckable = false
             }
             holder.chipGroupTags.addView(chip)
@@ -70,7 +95,7 @@ class VideoTutorialAdapter(
 
         // Inicializar ExoPlayer y registrarlo
         val player = ExoPlayer.Builder(context).build()
-        activePlayers.add(player)
+        players[position] = player
         holder.player = player
         holder.playerView.player = player
 
@@ -87,6 +112,15 @@ class VideoTutorialAdapter(
         player.repeatMode = Player.REPEAT_MODE_ONE
         player.prepare()
         player.playWhenReady = true
+
+        // Visibilidad de botones contextuales
+        if (fromTicket) {
+            holder.btnSolucione.visibility = View.VISIBLE
+            holder.btnNoFunciono.visibility = View.VISIBLE
+        } else {
+            holder.btnSolucione.visibility = View.GONE
+            holder.btnNoFunciono.visibility = View.GONE
+        }
 
         // Lógica de botones
         holder.btnSolucione.setOnClickListener {
@@ -128,21 +162,35 @@ class VideoTutorialAdapter(
 
     override fun onViewRecycled(holder: VideoViewHolder) {
         super.onViewRecycled(holder)
-        holder.player?.let {
-            activePlayers.remove(it)
-            it.release()
+        val player = holder.player
+        player?.let { p ->
+            val entry = players.entries.find { it.value == p }
+            if (entry != null) {
+                players.remove(entry.key)
+            }
+            p.release()
         }
         holder.player = null
         holder.playerView.player = null
     }
 
     fun pauseAllPlayers() {
-        activePlayers.forEach { it.pause() }
+        players.values.forEach { it.pause() }
     }
 
     fun releaseAllPlayers() {
-        activePlayers.forEach { it.release() }
-        activePlayers.clear()
+        players.values.forEach { it.release() }
+        players.clear()
+    }
+
+    fun onPageSelected(position: Int) {
+        players.forEach { (pos, player) ->
+            if (pos == position) {
+                player.play()
+            } else {
+                player.pause()
+            }
+        }
     }
 
     override fun getItemCount(): Int = videoList.size
