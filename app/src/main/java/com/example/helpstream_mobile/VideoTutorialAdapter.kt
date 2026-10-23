@@ -44,6 +44,7 @@ class VideoTutorialAdapter(
         val btnNoFunciono: LinearLayout = view.findViewById(R.id.btnNoFunciono)
         val btnCompartir: LinearLayout = view.findViewById(R.id.btnCompartir)
         val chipGroupTags: ChipGroup = view.findViewById(R.id.chip_group_tags)
+        val tvCasosResueltos: TextView = view.findViewById(R.id.tvCasosResueltos)
         var player: ExoPlayer? = null
     }
 
@@ -57,6 +58,7 @@ class VideoTutorialAdapter(
         val video = videoList[position]
         holder.textTitulo.text = video.titulo
         holder.textDescripcion.text = video.descripcion
+        holder.tvCasosResueltos.text = "Ha ayudado a ${video.casos_resueltos} operarios"
 
         // Lógica "Ver más"
         var isExpanded = false
@@ -124,7 +126,7 @@ class VideoTutorialAdapter(
 
         // Lógica de botones
         holder.btnSolucione.setOnClickListener {
-            resolverTicket()
+            resolverTicket(video.id)
         }
 
         holder.btnNoFunciono.setOnClickListener {
@@ -141,18 +143,28 @@ class VideoTutorialAdapter(
         }
     }
 
-    private fun resolverTicket() {
+    private fun resolverTicket(videoId: Int) {
         coroutineScope.launch {
             try {
-                val response = withContext(Dispatchers.IO) {
-                    RetrofitClient.getInstance(context).resolverTicketAutoatencion(ticketId)
+                // 1. Registrar resolución del video en las métricas
+                withContext(Dispatchers.IO) {
+                    RetrofitClient.getInstance(context).registrarResolucionVideo(videoId)
                 }
 
-                if (response.isSuccessful) {
-                    Toast.makeText(context, "¡Excelente! Ticket atendido y cerrado automáticamente", Toast.LENGTH_LONG).show()
-                    (context as? Activity)?.finish()
+                // 2. Si viene de un ticket, lo resolvemos también
+                if (fromTicket) {
+                    val response = withContext(Dispatchers.IO) {
+                        RetrofitClient.getInstance(context).resolverTicketAutoatencion(ticketId)
+                    }
+
+                    if (response.isSuccessful) {
+                        Toast.makeText(context, "¡Excelente! Ticket atendido y cerrado automáticamente", Toast.LENGTH_LONG).show()
+                        (context as? Activity)?.finish()
+                    } else {
+                        Toast.makeText(context, "Error al resolver ticket: ${response.code()}", Toast.LENGTH_SHORT).show()
+                    }
                 } else {
-                    Toast.makeText(context, "Error al resolver ticket: ${response.code()}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "¡Gracias por tu feedback!", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 Toast.makeText(context, "Error de red: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -187,6 +199,21 @@ class VideoTutorialAdapter(
         players.forEach { (pos, player) ->
             if (pos == position) {
                 player.play()
+                
+                // Registrar reproducción al iniciar el video a pantalla completa
+                val video = videoList.getOrNull(pos)
+                if (video != null) {
+                    coroutineScope.launch {
+                        try {
+                            withContext(Dispatchers.IO) {
+                                RetrofitClient.getInstance(context).registrarReproduccionVideo(video.id)
+                            }
+                        } catch (e: Exception) {
+                            // Ignoramos el error para no interrumpir la reproducción
+                            e.printStackTrace()
+                        }
+                    }
+                }
             } else {
                 player.pause()
             }

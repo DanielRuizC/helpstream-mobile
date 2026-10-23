@@ -212,12 +212,43 @@
             app:layout_constraintTop_toBottomOf="@+id/text_video_descripcion"
             app:layout_constraintStart_toStartOf="parent" />
 
+        <LinearLayout
+            android:id="@+id/layout_social_proof"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toBottomOf="@+id/text_ver_mas"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_check_circle"
+                app:tint="#4CAF50"
+                android:layout_marginEnd="6dp" />
+
+            <TextView
+                android:id="@+id/tvCasosResueltos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#4CAF50"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:shadowColor="#80000000"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="2"
+                tools:text="Ha ayudado a 0 operarios" />
+        </LinearLayout>
+
         <HorizontalScrollView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:scrollbars="none"
-            app:layout_constraintTop_toBottomOf="@+id/text_ver_mas"
+            app:layout_constraintTop_toBottomOf="@+id/layout_social_proof"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 

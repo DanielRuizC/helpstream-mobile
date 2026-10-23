@@ -103,6 +103,12 @@ interface ApiService {
     @GET("videos/")
     suspend fun obtenerVideosTutoriales(@Query("tags") tags: String? = null): Response<List<VideoTutorial>>
 
+    @POST("videos/{video_id}/reproducir")
+    suspend fun registrarReproduccionVideo(@Path("video_id") videoId: Int): Response<Unit>
+
+    @POST("videos/{video_id}/resolver")
+    suspend fun registrarResolucionVideo(@Path("video_id") videoId: Int): Response<Unit>
+
     @POST("tickets/{ticket_id}/resolver-autoatencion")
     suspend fun resolverTicketAutoatencion(@Path("ticket_id") ticketId: Int): Response<Unit>
 

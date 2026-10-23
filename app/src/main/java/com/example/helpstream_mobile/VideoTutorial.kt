@@ -6,5 +6,7 @@ data class VideoTutorial(
     val descripcion: String,
     val url_video: String,
     val tags: String,
-    val fecha_subida: String
+    val fecha_subida: String,
+    val reproducciones: Int = 0,
+    val casos_resueltos: Int = 0
 )
