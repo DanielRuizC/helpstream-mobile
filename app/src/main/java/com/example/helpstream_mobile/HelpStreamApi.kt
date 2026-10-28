@@ -18,6 +18,8 @@ import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
+import com.google.gson.annotations.SerializedName
+
 // 1. Modelos de datos
 data class TicketCreate(
     val usuario_id: Int,
@@ -61,6 +63,7 @@ data class TicketRespuesta(
 
 data class UsuarioLogin(
     val id: Int,
+    @SerializedName("nombres")
     val nombre: String? = null,
     val apellidos: String? = null,
     val correo: String? = null,
