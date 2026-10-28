@@ -47,10 +47,9 @@ class HomeActivity : AppCompatActivity() {
             return
         }
         
-        val userNameRaw = sharedPref.getString("USER_NAME", null)
+        val userNameRaw = sharedPref.getString("USER_NAME", "Usuario") ?: "Usuario"
         
-        // Fallback a "Usuario" si es nulo o inválido
-        val nombre = if (userNameRaw.isNullOrBlank() || userNameRaw == "null" || userNameRaw == "null null") {
+        val nombre = if (userNameRaw.isBlank() || userNameRaw == "null" || userNameRaw == "null null") {
             "Usuario"
         } else {
             userNameRaw

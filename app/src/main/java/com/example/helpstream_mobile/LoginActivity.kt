@@ -82,7 +82,12 @@ class LoginActivity : AppCompatActivity() {
                             try {
                                 val usuario = responseUsuario.body()!!
 
-                                val nombreLimpio = usuario.nombre ?: usuario.nombre_usuario ?: "Usuario"
+                                val nombreBackend = if (!usuario.nombre.isNullOrBlank()) usuario.nombre else usuario.nombre_usuario
+                                val nombreLimpio = if (!nombreBackend.isNullOrBlank()) {
+                                    nombreBackend
+                                } else {
+                                    email.substringBefore("@").replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+                                }
                                 val apellidosLimpio = usuario.apellidos ?: ""
                                 val correoLimpio = usuario.correo ?: ""
                                 val rolLimpio = usuario.rol_id ?: 0
