@@ -37,10 +37,9 @@ class HomeActivity : AppCompatActivity() {
         }
 
         val sharedPref = getSharedPreferences("HelpStreamSession", Context.MODE_PRIVATE)
-        val userNameRaw = sharedPref.getString("USER_NAME", "")
         
-        if (userNameRaw.isNullOrEmpty() || userNameRaw == "null" || userNameRaw == "null null") {
-            sharedPref.edit().clear().apply()
+        // Verificar si existe sesión
+        if (!sharedPref.contains("USER_ID")) {
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
@@ -48,13 +47,20 @@ class HomeActivity : AppCompatActivity() {
             return
         }
         
-        val tvWelcome = findViewById<android.widget.TextView>(R.id.tvWelcomeName)
-        val spanString = android.text.SpannableString("Hola, $userNameRaw")
-        spanString.setSpan(android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 6, spanString.length, android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        tvWelcome.text = spanString
+        val userNameRaw = sharedPref.getString("USER_NAME", null)
         
-        val initials = userNameRaw.split(" ").mapNotNull { it.firstOrNull()?.uppercase() }.take(2).joinToString("")
-        findViewById<android.widget.TextView>(R.id.tvInitials).text = if (initials.isNotEmpty()) initials else "U"
+        // Fallback a "Usuario" si es nulo o inválido
+        val nombre = if (userNameRaw.isNullOrBlank() || userNameRaw == "null" || userNameRaw == "null null") {
+            "Usuario"
+        } else {
+            userNameRaw
+        }
+        
+        val tvNombreUsuario = findViewById<android.widget.TextView>(R.id.tvWelcomeName)
+        val tvAvatarLetra = findViewById<android.widget.TextView>(R.id.tvInitials)
+        
+        tvNombreUsuario.text = "Hola, $nombre"
+        tvAvatarLetra.text = nombre.take(1).uppercase()
 
         findViewById<android.widget.ImageButton>(R.id.btnNotifications).setOnClickListener {
             startActivity(Intent(this, NotificationsActivity::class.java))

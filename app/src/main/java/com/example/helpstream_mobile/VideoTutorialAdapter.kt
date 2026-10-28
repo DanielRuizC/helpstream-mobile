@@ -58,7 +58,7 @@ class VideoTutorialAdapter(
         val video = videoList[position]
         holder.textTitulo.text = video.titulo
         holder.textDescripcion.text = video.descripcion
-        holder.tvCasosResueltos.text = "Ha ayudado a ${video.casos_resueltos} operarios"
+        holder.tvCasosResueltos.text = "Ha ayudado a ${video.casos_resueltos} usuarios"
 
         // Lógica "Ver más"
         var isExpanded = false
