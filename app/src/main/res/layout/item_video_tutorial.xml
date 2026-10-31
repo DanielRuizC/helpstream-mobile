@@ -15,7 +15,7 @@
         app:use_controller="true"
         app:controller_layout_id="@layout/custom_player_control_view"
         app:show_timeout="1500"
-        app:resize_mode="zoom"
+        app:resize_mode="fit"
         android:fitsSystemWindows="false"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -54,6 +54,7 @@ class VideoTutorialAdapter(
         return VideoViewHolder(view)
     }
 
+    @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     override fun onBindViewHolder(holder: VideoViewHolder, position: Int) {
         val video = videoList[position]
         holder.textTitulo.text = video.titulo
@@ -97,6 +98,7 @@ class VideoTutorialAdapter(
 
         // Inicializar ExoPlayer y registrarlo
         val player = ExoPlayer.Builder(context).build()
+        player.videoScalingMode = androidx.media3.common.C.VIDEO_SCALING_MODE_SCALE_TO_FIT
         players[position] = player
         holder.player = player
         holder.playerView.player = player
@@ -112,8 +114,6 @@ class VideoTutorialAdapter(
         val mediaItem = MediaItem.fromUri(fullUrl)
         player.setMediaItem(mediaItem)
         player.repeatMode = Player.REPEAT_MODE_ONE
-        player.prepare()
-        player.playWhenReady = true
 
         // Visibilidad de botones contextuales
         if (fromTicket) {
@@ -186,6 +186,16 @@ class VideoTutorialAdapter(
         holder.playerView.player = null
     }
 
+    override fun onViewAttachedToWindow(holder: VideoViewHolder) {
+        super.onViewAttachedToWindow(holder)
+        holder.player?.prepare()
+    }
+
+    override fun onViewDetachedFromWindow(holder: VideoViewHolder) {
+        super.onViewDetachedFromWindow(holder)
+        holder.player?.pause()
+    }
+
     fun pauseAllPlayers() {
         players.values.forEach { it.pause() }
     }
@@ -198,6 +208,7 @@ class VideoTutorialAdapter(
     fun onPageSelected(position: Int) {
         players.forEach { (pos, player) ->
             if (pos == position) {
+                player.playWhenReady = true
                 player.play()
                 
                 // Registrar reproducción al iniciar el video a pantalla completa
@@ -215,6 +226,7 @@ class VideoTutorialAdapter(
                     }
                 }
             } else {
+                player.playWhenReady = false
                 player.pause()
             }
         }
